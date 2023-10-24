@@ -2,7 +2,7 @@ version: '3'
 services:
   bot:
     image: "clashroyale-sfx-bot"
-    container_name: "clashroyale-sfx-bot"
+    container_name: "ClashRoyale-SFX-bot"
     build: .
     restart: unless-stopped
     dns:
