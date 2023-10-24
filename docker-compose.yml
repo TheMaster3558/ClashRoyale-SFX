@@ -1,0 +1,10 @@
+version: '3'
+services:
+  bot:
+    image: "clashroyale-sfx-bot"
+    container_name: "ClashRoyale_SFX-bot"
+    build: .
+    restart: unless-stopped
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4

@@ -1,0 +1,20 @@
+name: Publish Docker Image
+on:
+    push:
+        branches: [master]
+jobs:
+    push_to_packages:
+        name: Push Docker image to GitHub Packages
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out the repository
+              uses: actions/checkout@v2
+            - name: Push to GitHub Packages
+              uses: docker/build-push-action@v1
+              with:
+                  username: ${{ github.actor }}
+                  password: ${{ github.token }}
+                  registry: docker.pkg.github.com
+                  repository: TheMaster3558/ClashRoyale-SFX/ClashRoyale-SFX
+                  tags: latest
+                  build_args: BRANCH=${{ github.ref }},COMMIT=${{ github.sha }}
