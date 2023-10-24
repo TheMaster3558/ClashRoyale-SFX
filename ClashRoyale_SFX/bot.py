@@ -48,7 +48,7 @@ class Bot(commands.AutoShardedBot):
         await self.load_extension(f'jishaku')
 
         # await self.tree.sync()
-        self.top_gg = topgg.DBLClient(self, os.getenv('TOPGG_TOKEN'), autopost=True)
+        self.top_gg = topgg.DBLClient(self, os.environ['TOPGG_TOKEN'], autopost=True)
 
     async def close(self) -> None:
         await self.session.close()
