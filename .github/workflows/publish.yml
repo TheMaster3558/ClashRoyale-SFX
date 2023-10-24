@@ -15,6 +15,6 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ github.token }}
                   registry: docker.pkg.github.com
-                  repository: TheMaster3558/ClashRoyale-SFX/ClashRoyale-SFX
+                  repository: TheMaster3558/clashroyale-sfx/ClashRoyale-SFX
                   tags: latest
                   build_args: BRANCH=${{ github.ref }},COMMIT=${{ github.sha }}
