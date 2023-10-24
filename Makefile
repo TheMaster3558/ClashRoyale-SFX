@@ -4,4 +4,4 @@ format:
 	black . && isort . --profile black
 
 docker:
-	docker-compose up -d --build
+	docker build . --tag ghcr.io/themaster3558/clashroyaleaudio:latest
