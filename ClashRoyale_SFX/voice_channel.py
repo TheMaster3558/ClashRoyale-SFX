@@ -15,15 +15,23 @@ class Basic(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState) -> None:
+    async def on_voice_state_update(
+        self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState
+    ) -> None:
         if not before.channel:
             return
 
-        voice_client = before.channel.guild.voice_client  # don't use member because this function may trigger if they leave the guild
+        voice_client = (
+            before.channel.guild.voice_client
+        )  # don't use member because this function may trigger if they leave the guild
 
-        if voice_client is not None and after.channel is None and before.channel == voice_client.channel and len(before.channel.members) == 1:
+        if (
+            voice_client is not None
+            and after.channel is None
+            and before.channel == voice_client.channel
+            and len(before.channel.members) == 1
+        ):
             await voice_client.disconnect(force=False)
-
 
     @app_commands.command(description='Join your current voice channel!')
     async def join(self, interaction: discord.Interaction[Bot]) -> bool:
