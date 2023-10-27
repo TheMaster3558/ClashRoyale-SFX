@@ -34,5 +34,5 @@ class DiscordWebhookLogger(logging.Handler):
 
             if not self.webhook:
                 self.webhook = discord.Webhook.from_url(os.environ['LOG_WEBHOOK_URL'], session=self.bot.session, client=self.bot)
-            await self.webhook.send(text)
+            await self.webhook.send(f'```py\n{text}\n```')
 
