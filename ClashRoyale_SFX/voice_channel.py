@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING
 
 import discord
@@ -44,9 +45,14 @@ class Basic(commands.Cog):
                 return False
             return True
         else:
-            await interaction.user.voice.channel.connect()
-            await interaction.followup.send('Joined!')
-            return True
+            try:
+                await interaction.user.voice.channel.connect()
+            except asyncio.TimeoutError:
+                await interaction.followup.send('Connecting to your voice channel failed.')
+                return False
+            else:
+                await interaction.followup.send('Joined!')
+                return True
 
     @app_commands.command(description='Leave your current voice channel.')
     async def leave(self, interaction: discord.Interaction[Bot]) -> None:
