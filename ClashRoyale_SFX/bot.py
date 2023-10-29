@@ -45,6 +45,7 @@ class Bot(commands.AutoShardedBot):
         await self.load_extension(f'{module}.voice_channel')
         await self.load_extension(f'{module}.clash_royale_audio')
         await self.load_extension(f'{module}.top_gg')
+        await self.load_extension(f'{module}.status')
         await self.load_extension(f'jishaku')
 
         # await self.tree.sync()
