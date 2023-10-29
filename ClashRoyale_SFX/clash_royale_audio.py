@@ -13,12 +13,16 @@ if TYPE_CHECKING:
     from bot import Bot
 
 
+cooldown = app_commands.checks.cooldown(3, 15, key=lambda i: (i.guild_id,))
+
+
 class ClashRoyaleAudio(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
     @app_commands.command(description='Clash Royale battle music!')
     @app_commands.rename(_8bit='8bit')
+    @cooldown
     async def battle(
         self,
         interaction: discord.Interaction[Bot],
@@ -102,6 +106,7 @@ class ClashRoyaleAudio(commands.Cog):
 
     @app_commands.command(description='Clash Royale menu music!')
     @app_commands.rename(_8bit='8bit')
+    @cooldown
     async def menu(self, interaction: discord.Interaction[Bot], _8bit: bool = False) -> None:
         source = (
             'audio/clash_royale/menu/Royale_8bit_menu.ogg'
@@ -119,6 +124,7 @@ class ClashRoyaleAudio(commands.Cog):
             await play(interaction, [source])
 
     @app_commands.command(description='Electricity!')
+    @cooldown
     async def electro_wizard(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice(
             [
@@ -130,12 +136,14 @@ class ClashRoyaleAudio(commands.Cog):
             await play(interaction, [source])
 
     @app_commands.command(description='HOG RIIIIIIDER')
+    @cooldown
     async def hog_rider(self, interaction: discord.Interaction[Bot]) -> None:
         source = 'audio/clash_royale/cards/hog_rider/hog_rider.mp3'
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @app_commands.command(description='HEHEHEHA!')
+    @cooldown
     async def heheheha(self, interaction: discord.Interaction[Bot]) -> None:
         source = 'audio/clash_royale/king/heheheha.mp3'
         if await self.bot.join_command.callback(self, interaction):
@@ -144,30 +152,35 @@ class ClashRoyaleAudio(commands.Cog):
     king = app_commands.Group(name='king', description='OG King emotes!')
 
     @king.command(description='Thumbs up!')
+    @cooldown
     async def congrats(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_congrats_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @king.command(description='mewmewmewmewmew')
+    @cooldown
     async def cry(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_crying_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @king.command(description='HAPPY!')
+    @cooldown
     async def happy(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_happy_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @king.command(description='HEHEHEHA!')
+    @cooldown
     async def laugh(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_laughter_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @king.command(description='GRRRRR!')
+    @cooldown
     async def mad(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_mad_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
