@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import random
 from typing import TYPE_CHECKING, Literal
 
@@ -19,6 +20,16 @@ cooldown = app_commands.checks.cooldown(3, 15, key=lambda i: (i.guild_id,))
 class ClashRoyaleAudio(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    async def cog_app_command_error(self, interaction: discord.Interaction[Bot], error: app_commands.AppCommandError) -> None:
+        if isinstance(error, app_commands.CommandOnCooldown):
+            ready_at = discord.utils.utcnow() + datetime.timedelta(seconds=error.retry_after)
+            await interaction.followup.send(
+                f'This command is on cooldown. Try again in {discord.utils.format_dt(ready_at, style="R")}.'
+            )
+        else:
+            raise error
+
 
     @app_commands.command(description='Clash Royale battle music!')
     @app_commands.rename(_8bit='8bit')
