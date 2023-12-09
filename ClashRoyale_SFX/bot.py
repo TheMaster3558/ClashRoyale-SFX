@@ -13,6 +13,9 @@ from discord.ext import commands, tasks
 
 class Tree(app_commands.CommandTree):
     async def interaction_check(self, interaction: discord.Interaction[Bot]) -> bool:
+        if not interaction.command:
+            return True
+
         await interaction.response.defer()
 
         if random.randint(1, 5) == 1:
@@ -50,6 +53,7 @@ class Bot(commands.AutoShardedBot):
         await self.load_extension(f'{module}.voice_channel')
         await self.load_extension(f'{module}.clash_royale_audio')
         await self.load_extension(f'{module}.top_gg')
+        await self.load_extension(f'{module}.owner')
 
         await self.load_extension(f'jishaku')
 
