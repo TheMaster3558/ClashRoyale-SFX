@@ -8,7 +8,7 @@ import aiohttp
 import discord
 import topgg
 from discord import app_commands
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 
 class Tree(app_commands.CommandTree):
@@ -37,6 +37,11 @@ class Bot(commands.AutoShardedBot):
         super().__init__(command_prefix=commands.when_mentioned, intents=intents, tree_cls=Tree)
         self.test_guild = test_guild
 
+    @tasks.loop(hours=6)
+    async def post_guild_count(self) -> None:
+        await self.wait_until_ready()
+        await self.get_channel(int(os.environ['GUILD_COUNT_CHANNEL_ID'])).send(str(len(self.guilds)))
+
     async def setup_hook(self) -> None:
         self.session = aiohttp.ClientSession()
 
@@ -45,13 +50,17 @@ class Bot(commands.AutoShardedBot):
         await self.load_extension(f'{module}.voice_channel')
         await self.load_extension(f'{module}.clash_royale_audio')
         await self.load_extension(f'{module}.top_gg')
-        await self.load_extension(f'{module}.status')
+
         await self.load_extension(f'jishaku')
 
         # await self.tree.sync()
         self.top_gg = topgg.DBLClient(self, os.environ['TOPGG_TOKEN'], autopost=True)
 
+        if 'GUILD_COUNT_CHANNEL_ID' in os.environ:
+            self.post_guild_count.start()
+
     async def close(self) -> None:
+        self.post_guild_count.cancel()
         await self.session.close()
         await self.top_gg.close()
         await super().close()
