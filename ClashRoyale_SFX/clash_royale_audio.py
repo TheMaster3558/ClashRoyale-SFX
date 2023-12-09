@@ -8,7 +8,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from ClashRoyale_SFX.player import play
+from .player import play
 
 if TYPE_CHECKING:
     from bot import Bot
@@ -21,7 +21,9 @@ class ClashRoyaleAudio(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    async def cog_app_command_error(self, interaction: discord.Interaction[Bot], error: app_commands.AppCommandError) -> None:
+    async def cog_app_command_error(
+        self, interaction: discord.Interaction[Bot], error: app_commands.AppCommandError
+    ) -> None:
         if isinstance(error, app_commands.CommandOnCooldown):
             ready_at = discord.utils.utcnow() + datetime.timedelta(seconds=error.retry_after)
             await interaction.followup.send(
@@ -29,7 +31,6 @@ class ClashRoyaleAudio(commands.Cog):
             )
         else:
             raise error
-
 
     @app_commands.command(description='Clash Royale battle music!')
     @app_commands.rename(_8bit='8bit')

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Type, Self
+from typing import TYPE_CHECKING, Self, Type
 
 import discord
 from discord.ext import commands
@@ -25,20 +25,19 @@ class StatusView(discord.ui.View):
         self.url: str | None = None
 
     def revise_embed(self) -> discord.Embed:
-        return discord.Embed().add_field(
-            name='Activity Type',
-            value=self.activity_type and self.activity_type.__name__
-        ).add_field(
-            name='Status',
-            value=self.status
-        ).add_field(
-            name='URL',
-            value=self.url
+        return (
+            discord.Embed()
+            .add_field(name='Activity Type', value=self.activity_type and self.activity_type.__name__)
+            .add_field(name='Status', value=self.status)
+            .add_field(name='URL', value=self.url)
         )
 
-    @discord.ui.select(options=[
-        discord.SelectOption(label=activity_type.__name__) for activity_type in (discord.Game, discord.Streaming, discord.CustomActivity)
-    ])
+    @discord.ui.select(
+        options=[
+            discord.SelectOption(label=activity_type.__name__)
+            for activity_type in (discord.Game, discord.Streaming, discord.CustomActivity)
+        ]
+    )
     async def select_activity_type(self, interaction: discord.Interaction[Bot], select: discord.ui.Select[Self]) -> None:
         self.activity_type = getattr(discord, select.values[0])
         if self.activity_type is discord.Streaming:
@@ -84,7 +83,6 @@ class StatusView(discord.ui.View):
 class Owner(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-
 
     @commands.command()
     async def status(self, ctx: commands.Context[Bot]) -> None:
