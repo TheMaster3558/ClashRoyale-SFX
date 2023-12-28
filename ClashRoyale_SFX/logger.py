@@ -29,7 +29,5 @@ class DiscordWebhookLogger(logging.Handler):
             await asyncio.sleep(0)
 
         if not self.webhook:
-            self.webhook = discord.Webhook.from_url(
-                os.environ['LOG_WEBHOOK_URL'], session=self.bot.session, client=self.bot
-            )
+            self.webhook = discord.Webhook.from_url(os.environ['LOG_WEBHOOK_URL'], session=self.bot.session, client=self.bot)
         await self.webhook.send(f'```py\n{text}\n```')
