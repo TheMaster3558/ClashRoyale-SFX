@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import logging
 import asyncio
 import os
 import random
+from pathlib import Path
 
 import aiohttp
 import discord
@@ -48,12 +50,13 @@ class Bot(commands.AutoShardedBot):
     async def setup_hook(self) -> None:
         self.session = aiohttp.ClientSession()
 
-        module = os.path.dirname(os.path.realpath(__file__)).split('\\')[-1].split('/')[-1]
-
-        await self.load_extension(f'{module}.voice_channel')
-        await self.load_extension(f'{module}.clash_royale_audio')
-        await self.load_extension(f'{module}.top_gg')
-        await self.load_extension(f'{module}.owner')
+        logger = logging.getLogger('discord')
+        for file in Path('cogs').glob('**/*.py'):
+            *tree, _ = file.parts
+            try:
+                await self.load_extension(f"{'.'.join(tree)}.{file.stem}")
+            except Exception as e:
+                logger.error(f'Error loading cog: {file.stem}', exc_info=e)
 
         await self.load_extension(f'jishaku')
 

@@ -8,10 +8,10 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from .player import play
+from ..player import play
 
 if TYPE_CHECKING:
-    from bot import Bot
+    from ..bot import Bot
 
 
 cooldown = app_commands.checks.cooldown(3, 15, key=lambda i: (i.guild_id,))
