@@ -27,7 +27,7 @@ class ClashRoyaleAudio(commands.Cog):
         if isinstance(error, app_commands.CommandOnCooldown):
             ready_at = discord.utils.utcnow() + datetime.timedelta(seconds=error.retry_after)
             await interaction.followup.send(
-                f'This command is on cooldown. Try again in {discord.utils.format_dt(ready_at, style="R")}.'
+                f'This command is on cooldown. Try again in {discord.utils.format_dt(ready_at, style='R')}.'
             )
         else:
             raise error
