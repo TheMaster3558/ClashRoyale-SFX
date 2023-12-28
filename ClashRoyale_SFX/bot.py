@@ -15,21 +15,8 @@ from discord.ext import commands, tasks
 
 class Tree(app_commands.CommandTree):
     async def interaction_check(self, interaction: discord.Interaction[Bot]) -> bool:
-        if not interaction.command:
-            return True
-
-        await interaction.response.defer()
-
-        if random.randint(1, 5) == 1:
-            cmds = (self.get_command('vote'), self.get_command('review'))
-            cmd = random.choice(cmds)
-
-            async def wait_then_execute() -> None:
-                await asyncio.sleep(5)
-                await cmd.callback(interaction.client.get_cog('top_gg'), interaction)
-
-            asyncio.create_task(wait_then_execute())
-
+        if interaction.command:
+            await interaction.response.defer()
         return True
 
 
