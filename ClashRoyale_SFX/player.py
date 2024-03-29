@@ -27,10 +27,13 @@ async def play(interaction: discord.Interaction[Bot], sources: Iterable[os.PathL
 
     play_next_track(None)
 
+    # fmt: off
     async with interaction.client.session.get(
         f'https://tenor.googleapis.com/v2/search?q=clashroyale+{interaction.command.qualified_name}&key={os.getenv('TENOR_API_KEY')}&client_key={os.getenv('TENOR_CLIENT_KEY')}&limit=1'
     ) as resp:
         data = await resp.json()
+    # fmt: on
+
     gif_url = data['results'][0]['media_formats']['nanogif']['url']
-    embed = discord.Embed(title='Playing!').set_image(url=gif_url)
+    embed = discord.Embed(title='Playing!', color=discord.Color.dark_embed()).set_image(url=gif_url)
     await interaction.followup.send(embed=embed)

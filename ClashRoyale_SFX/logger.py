@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import asyncio
 import logging
 import os
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 MISSING = discord.utils.MISSING
 
 
-class DiscordWebhookLogger(logging.Handler):
+class DiscordWebhookLogger(logging.Handler, io.StringIO):
     def __init__(self, bot: Bot) -> None:
         super().__init__()
         self.bot = bot
@@ -24,10 +25,18 @@ class DiscordWebhookLogger(logging.Handler):
         text = self.format(record)
         asyncio.create_task(self.send(text))
 
-    async def send(self, text: str) -> None:
+    async def send(self, text: str, code: str = 'py') -> None:
         while not hasattr(self.bot, 'session'):
             await asyncio.sleep(0)
 
         if not self.webhook:
             self.webhook = discord.Webhook.from_url(os.environ['LOG_WEBHOOK_URL'], session=self.bot.session, client=self.bot)
-        await self.webhook.send(f'```py\n{text}\n```')
+
+        embed = discord.Embed(description=f'```{code}\n{text}\n```', color=discord.Color.dark_embed())
+
+        try:
+            await self.webhook.send(embed=embed)
+        except discord.HTTPException:
+            # without this catch, a ratelimit could send the bot into an infinite loop
+            # error -> log the error -> rate limit -> error -> ...
+            pass

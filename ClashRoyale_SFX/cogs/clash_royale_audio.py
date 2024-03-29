@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 import random
 from typing import TYPE_CHECKING, Literal
 
@@ -8,33 +7,37 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+from .votes import AllView, NoMoreCommands
 from ..player import play
 
 if TYPE_CHECKING:
     from ..bot import Bot
 
 
-cooldown = app_commands.checks.cooldown(3, 15, key=lambda i: (i.guild_id,))
+@app_commands.check
+async def check_commands_remaining(interaction: discord.Interaction) -> bool:
+    bot: Bot = interaction.client
+
+    bot.commands_remaining.setdefault(interaction.user.id, 10)
+    if bot.commands_remaining[interaction.user.id] <= 0:
+        raise NoMoreCommands()
+
+    bot.commands_remaining[interaction.user.id] -= 1
+    return True
 
 
 class ClashRoyaleAudio(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    async def cog_app_command_error(
-        self, interaction: discord.Interaction[Bot], error: app_commands.AppCommandError
-    ) -> None:
-        if isinstance(error, app_commands.CommandOnCooldown):
-            ready_at = discord.utils.utcnow() + datetime.timedelta(seconds=error.retry_after)
-            await interaction.followup.send(
-                f'This command is on cooldown. Try again in {discord.utils.format_dt(ready_at, style='R')}.'
-            )
-        else:
-            raise error
+    @commands.Cog.listener()
+    async def on_app_command_completion(self, interaction: discord.Interaction[Bot], command: app_commands.Command) -> None:
+        if random.randint(0, 10) == 0:
+            await interaction.followup.send(f'{interaction.user.mention} support me!!🥺🥺', view=AllView(interaction.client))
 
     @app_commands.command(description='Clash Royale battle music!')
     @app_commands.rename(_8bit='8bit')
-    @cooldown
+    @check_commands_remaining
     async def battle(
         self,
         interaction: discord.Interaction[Bot],
@@ -45,7 +48,10 @@ class ClashRoyaleAudio(commands.Cog):
         training_camp: bool = False,
     ) -> None:
         if _8bit and training_camp:
-            await interaction.followup.send('You cannot have both 8bit and training camp.')
+            embed = discord.Embed(
+                title='That\'s not how it works', description='You can\'t have both 8bit and training camp'
+            )
+            await interaction.followup.send(embed=embed)
             return
 
         if _8bit:
@@ -101,7 +107,10 @@ class ClashRoyaleAudio(commands.Cog):
                 case 'loss':
                     sources.append('audio/clash_royale/battle/Boat_pve_lose_01.ogg')
                 case 'draw':
-                    await interaction.followup.send('Cannot have a draw in boat battles.')
+                    embed = discord.Embed(
+                        title='Do you even play clash?', description='You can\'t have a draw in boat battles'
+                    )
+                    await interaction.followup.send(embed=embed)
                     return
         else:
             match result:
@@ -118,7 +127,7 @@ class ClashRoyaleAudio(commands.Cog):
 
     @app_commands.command(description='Clash Royale menu music!')
     @app_commands.rename(_8bit='8bit')
-    @cooldown
+    @check_commands_remaining
     async def menu(self, interaction: discord.Interaction[Bot], _8bit: bool = False) -> None:
         source = (
             'audio/clash_royale/menu/Royale_8bit_menu.ogg'
@@ -136,7 +145,7 @@ class ClashRoyaleAudio(commands.Cog):
             await play(interaction, [source])
 
     @app_commands.command(description='Electricity!')
-    @cooldown
+    @check_commands_remaining
     async def electro_wizard(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice(
             [
@@ -148,14 +157,14 @@ class ClashRoyaleAudio(commands.Cog):
             await play(interaction, [source])
 
     @app_commands.command(description='HOG RIIIIIIDER')
-    @cooldown
+    @check_commands_remaining
     async def hog_rider(self, interaction: discord.Interaction[Bot]) -> None:
         source = 'audio/clash_royale/cards/hog_rider/hog_rider.mp3'
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @app_commands.command(description='HEHEHEHA!')
-    @cooldown
+    @check_commands_remaining
     async def heheheha(self, interaction: discord.Interaction[Bot]) -> None:
         source = 'audio/clash_royale/king/heheheha.mp3'
         if await self.bot.join_command.callback(self, interaction):
@@ -164,35 +173,35 @@ class ClashRoyaleAudio(commands.Cog):
     king = app_commands.Group(name='king', description='OG King emotes!')
 
     @king.command(description='Thumbs up!')
-    @cooldown
+    @check_commands_remaining
     async def congrats(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_congrats_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @king.command(description='mewmewmewmewmew')
-    @cooldown
+    @check_commands_remaining
     async def cry(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_crying_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @king.command(description='HAPPY!')
-    @cooldown
+    @check_commands_remaining
     async def happy(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_happy_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @king.command(description='HEHEHEHA!')
-    @cooldown
+    @check_commands_remaining
     async def laugh(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_laughter_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
 
     @king.command(description='GRRRRR!')
-    @cooldown
+    @check_commands_remaining
     async def mad(self, interaction: discord.Interaction[Bot]) -> None:
         source = random.choice([f'audio/clash_royale/king/king_mad_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
