@@ -30,11 +30,6 @@ class ClashRoyaleAudio(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_app_command_completion(self, interaction: discord.Interaction[Bot], command: app_commands.Command) -> None:
-        if random.randint(0, 10) == 0:
-            await interaction.followup.send(f'{interaction.user.mention} support me!!🥺🥺', view=AllView(interaction.client))
-
     @app_commands.command(description='Clash Royale battle music!')
     @app_commands.rename(_8bit='8bit')
     @check_commands_remaining
@@ -49,7 +44,9 @@ class ClashRoyaleAudio(commands.Cog):
     ) -> None:
         if _8bit and training_camp:
             embed = discord.Embed(
-                title='That\'s not how it works', description='You can\'t have both 8bit and training camp'
+                title='That\'s not how it works',
+                description='You can\'t have both 8bit and training camp',
+                color=discord.Color.dark_embed(),
             )
             await interaction.followup.send(embed=embed)
             return
@@ -108,7 +105,9 @@ class ClashRoyaleAudio(commands.Cog):
                     sources.append('audio/clash_royale/battle/Boat_pve_lose_01.ogg')
                 case 'draw':
                     embed = discord.Embed(
-                        title='Do you even play clash?', description='You can\'t have a draw in boat battles'
+                        title='Do you even play clash?',
+                        description='You can\'t have a draw in boat battles',
+                        color=discord.Color.dark_embed(),
                     )
                     await interaction.followup.send(embed=embed)
                     return
@@ -206,14 +205,14 @@ class ClashRoyaleAudio(commands.Cog):
         source = random.choice([f'audio/clash_royale/king/king_mad_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
-            
+
     @app_commands.command(description='Most toxic emote fr')
     @check_commands_remaining
     async def goblin(self, interaction: discord.Interaction[Bot]) -> None:
         source = 'audio/clash_royale/cards/goblin/goblin-laugh-clash-royale.mp3'
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
-            
+
     @app_commands.command(description='Bock Bock')
     @check_commands_remaining
     async def chicken(self, interaction: discord.Interaction[Bot]) -> None:

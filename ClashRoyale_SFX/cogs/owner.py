@@ -26,7 +26,7 @@ class StatusView(discord.ui.View):
 
     def revise_embed(self) -> discord.Embed:
         return (
-            discord.Embed()
+            discord.Embed(color=discord.Color.dark_embed())
             .add_field(name='Activity Type', value=self.activity_type and self.activity_type.__name__)
             .add_field(name='Status', value=self.status)
             .add_field(name='URL', value=self.url)
@@ -85,6 +85,7 @@ class Owner(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.is_owner()
     async def status(self, ctx: commands.Context[Bot]) -> None:
         view = StatusView()
         view.message = await ctx.send(view=view)

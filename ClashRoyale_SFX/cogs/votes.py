@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 import math
 import os
 from typing import TYPE_CHECKING
@@ -110,6 +111,13 @@ class TopGG(commands.Cog):
     @commands.Cog.listener('on_vote')
     async def on_vote(self, user_id: int) -> None:
         self.bot.commands_remaining[user_id] = math.inf
+
+    @commands.Cog.listener()
+    async def on_app_command_completion(self, interaction: discord.Interaction[Bot],
+                                        command: app_commands.Command) -> None:
+        if random.randint(0, 10) == 0:
+            await interaction.followup.send(f'{interaction.user.mention} support me!!🥺🥺',
+                                            view=AllView(interaction.client))
 
     async def cog_app_command_error(
         self, interaction: discord.Interaction[Bot], error: app_commands.AppCommandError
