@@ -206,6 +206,20 @@ class ClashRoyaleAudio(commands.Cog):
         source = random.choice([f'audio/clash_royale/king/king_mad_0{i}.ogg' for i in range(1, 5)])
         if await self.bot.join_command.callback(self, interaction):
             await play(interaction, [source])
+            
+    @app_commands.command(description='Most toxic emote fr')
+    @check_commands_remaining
+    async def goblin(self, interaction: discord.Interaction[Bot]) -> None:
+        source = 'audio/clash_royale/cards/goblin/goblin-laugh-clash-royale.mp3'
+        if await self.bot.join_command.callback(self, interaction):
+            await play(interaction, [source])
+            
+    @app_commands.command(description='Bock Bock')
+    @check_commands_remaining
+    async def chicken(self, interaction: discord.Interaction[Bot]) -> None:
+        source = 'audio/clash_royale/chicken/chicken-emote-clash-royale.mp3'
+        if await self.bot.join_command.callback(self, interaction):
+            await play(interaction, [source])
 
 
 async def setup(bot: Bot) -> None:

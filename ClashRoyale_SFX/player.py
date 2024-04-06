@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from bot import Bot
 
 
-async def play(interaction: discord.Interaction[Bot], sources: Iterable[os.PathLike[str]]) -> None:
+async def play(interaction: discord.Interaction[Bot], sources: Iterable[os.PathLike[str] | str]) -> None:
     sources = iter([await discord.FFmpegOpusAudio.from_probe(source, method='fallback') for source in sources])
 
     def play_next_track(_: Any):
