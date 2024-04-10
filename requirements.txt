@@ -2,5 +2,4 @@ discord.py[voice]>=2.3
 topggpy>=1.4
 python-dotenv>=1.0
 jishaku>=2.5
-aiohttp_cors>=0.7
 requests>=2.31
