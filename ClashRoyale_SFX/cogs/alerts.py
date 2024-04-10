@@ -105,11 +105,11 @@ class Alerts(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.alerted_users: set[int] = set()
-        self.current_alert: discord.Embed | None = discord.Embed(title='alert')
+        self.current_alert: discord.Embed | None = None
 
     @commands.Cog.listener()
     async def on_app_command_completion(self, interaction: discord.Interaction[Bot], command: app_commands.Command) -> None:
-        if self.current_alert and interaction.user.id not in self.alerted_users:
+        if self.current_alert is not None and interaction.user.id not in self.alerted_users:
             embed = discord.Embed(
                 title='You have been a new alert! Click below to read it!', color=discord.Color.dark_embed()
             )

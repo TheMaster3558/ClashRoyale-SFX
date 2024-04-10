@@ -13,8 +13,8 @@ from discord.ext import commands, tasks
 
 class Tree(app_commands.CommandTree):
     async def interaction_check(self, interaction: discord.Interaction[Bot]) -> bool:
-        # if interaction.command:
-        #    await interaction.response.defer()
+        if interaction.command:
+            await interaction.response.defer()
 
         return True
 
@@ -51,8 +51,6 @@ class Bot(commands.AutoShardedBot):
                     logger.error(f'Error loading cog: {file}', exc_info=e)
 
         await self.load_extension(f'jishaku')
-
-        # await self.tree.sync()
 
         self.top_gg = topgg.DBLClient(self, os.environ['TOPGG_TOKEN'], autopost=True)
 

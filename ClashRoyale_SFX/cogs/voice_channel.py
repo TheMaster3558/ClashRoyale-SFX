@@ -30,7 +30,7 @@ class Basic(commands.Cog):
             voice_client is not None
             and after.channel is None
             and before.channel == voice_client.channel
-            and len(before.channel.members) == 1
+            and len(voice_client.channel.members) < 2
         ):
             await voice_client.disconnect(force=False)
 
