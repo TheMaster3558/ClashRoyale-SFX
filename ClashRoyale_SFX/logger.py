@@ -24,7 +24,10 @@ class DiscordWebhookLogger(logging.Handler):
 
     def emit(self, record: logging.LogRecord) -> None:
         import threading
-        print(f'{threading.get_ident()}, {threading.main_thread().ident}')
+
+        print(asyncio.get_event_loop())
+        if threading.get_ident() != threading.main_thread().ident:
+            raise ValueError('errror')
         text = self.format(record)
         asyncio.create_task(self.send(text))
 
