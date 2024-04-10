@@ -2,11 +2,7 @@ version: '3.8'
 
 services:
   bot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - ngrok
+    image: ghcr.io/themaster3558/clashroyale-sfx:master
 
   ngrok:
     image: shkoliar/ngrok:latest
