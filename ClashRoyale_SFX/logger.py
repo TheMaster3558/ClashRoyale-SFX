@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import io
 import asyncio
 import logging
 import os
@@ -15,11 +14,15 @@ if TYPE_CHECKING:
 MISSING = discord.utils.MISSING
 
 
-class DiscordWebhookLogger(logging.Handler, io.StringIO):
+class DiscordWebhookLogger(logging.Handler):
+    # filled in later by the Bot class
+
     def __init__(self, bot: Bot) -> None:
         super().__init__()
         self.bot = bot
         self.webhook: discord.Webhook = MISSING
+        import threading
+        print(threading.get_ident(), threading.main_thread().ident)
 
     def emit(self, record: logging.LogRecord) -> None:
         text = self.format(record)
