@@ -118,21 +118,6 @@ class TopGG(commands.Cog):
             await interaction.followup.send(f'{interaction.user.mention} support me!!🥺🥺',
                                             view=AllView(interaction.client))
 
-    async def cog_app_command_error(
-        self, interaction: discord.Interaction[Bot], error: app_commands.AppCommandError
-    ) -> None:
-        if isinstance(error, NoMoreCommands):
-            embed = discord.Embed(
-                title='Uh oh, you ran out of commands :(',
-                description=f'You *could* either wait {discord.utils.format_dt(self.bot.reset_commands_remaining.next_iteration, style='R')} '
-                            f'**OR** you can vote for me to get **UNLIMITED** commands for the **rest of the day**!',
-                color=discord.Color.dark_embed()
-            ).set_footer(text='Voting only takes 30 seconds so you know what to do😉')
-            view = VoteView(interaction.client)
-            await interaction.followup.send(embed=embed, view=view)
-        else:
-            raise error
-
     @app_commands.command(description='Vote for me!')
     async def vote(self, interaction: discord.Interaction[Bot]) -> None:
         embed = discord.Embed(

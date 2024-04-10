@@ -8,7 +8,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from ..player import play
-from .votes import AllView, NoMoreCommands
+from .votes import VoteView, NoMoreCommands
 
 if TYPE_CHECKING:
     from ..bot import Bot
@@ -29,6 +29,21 @@ async def check_commands_remaining(interaction: discord.Interaction) -> bool:
 class ClashRoyaleAudio(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    async def cog_app_command_error(
+        self, interaction: discord.Interaction[Bot], error: app_commands.AppCommandError
+    ) -> None:
+        if isinstance(error, NoMoreCommands):
+            embed = discord.Embed(
+                title='Uh oh, you ran out of commands :(',
+                description=f'You *could* either wait {discord.utils.format_dt(self.bot.reset_commands_remaining.next_iteration, style='R')} '
+                            f'**OR** you can vote for me to get **UNLIMITED** commands for the **rest of the day**!',
+                color=discord.Color.dark_embed()
+            ).set_footer(text='Voting only takes 30 seconds so you know what to do😉')
+            view = VoteView(interaction.client)
+            await interaction.followup.send(embed=embed, view=view)
+        else:
+            raise error
 
     @app_commands.command(description='Clash Royale battle music!')
     @app_commands.rename(_8bit='8bit')
