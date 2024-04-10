@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import time
 from typing import TYPE_CHECKING
 
 import discord
@@ -15,21 +16,22 @@ MISSING = discord.utils.MISSING
 
 
 class DiscordWebhookLogger(logging.Handler):
-    # filled in later by the Bot class
-
     def __init__(self, bot: Bot) -> None:
         super().__init__()
         self.bot = bot
         self.webhook: discord.Webhook = MISSING
+        self.loop: asyncio.AbstractEventLoop | None = None
 
     def emit(self, record: logging.LogRecord) -> None:
-        import threading
-
-        print(asyncio.get_event_loop())
-        if threading.get_ident() != threading.main_thread().ident:
-            raise ValueError('errror')
         text = self.format(record)
-        asyncio.create_task(self.send(text))
+
+        try:
+            asyncio.create_task(self.send(text))
+        except RuntimeError:
+            # no event loop is present as this is being called from another thread for some reason
+            while self.loop is None:
+                time.sleep(1)
+            asyncio.run_coroutine_threadsafe(self.send(text), self.loop)
 
     async def send(self, text: str, code: str = 'py') -> None:
         while not hasattr(self.bot, 'session'):

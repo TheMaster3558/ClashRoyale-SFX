@@ -1,14 +1,20 @@
 from __future__ import annotations
 
+import asyncio
 import datetime
 import logging
 import os
+from typing import TYPE_CHECKING, Optional
 
 import aiohttp
 import discord
 import topgg
 from discord import app_commands
 from discord.ext import commands, tasks
+from discord.utils import MISSING
+
+if TYPE_CHECKING:
+    from .logger import DiscordWebhookLogger
 
 
 class Tree(app_commands.CommandTree):
@@ -22,6 +28,7 @@ class Tree(app_commands.CommandTree):
 class Bot(commands.AutoShardedBot):
     session: aiohttp.ClientSession
     top_gg: topgg.DBLClient
+    logger: DiscordWebhookLogger
 
     def __init__(self, test_guild: discord.abc.Snowflake) -> None:
         intents = discord.Intents.default()
@@ -39,6 +46,7 @@ class Bot(commands.AutoShardedBot):
         self.commands_remaining.clear()
 
     async def setup_hook(self) -> None:
+        self.logger.loop = asyncio.get_running_loop()
         self.session = aiohttp.ClientSession()
 
         logger = logging.getLogger('discord')
@@ -57,6 +65,19 @@ class Bot(commands.AutoShardedBot):
         if 'GUILD_COUNT_CHANNEL_ID' in os.environ:
             self.post_guild_count.start()
         self.reset_commands_remaining.start()
+
+    def run(
+        self,
+        token: str,
+        *,
+        reconnect: bool = True,
+        log_handler: Optional[logging.Handler] = MISSING,
+        log_formatter: logging.Formatter = MISSING,
+        log_level: int = MISSING,
+        root_logger: bool = False,
+    ) -> None:
+        self.logger = log_handler  # type: ignore
+        super().run(token, reconnect=reconnect, log_handler=log_handler, log_formatter=log_formatter, log_level=log_level, root_logger=root_logger)
 
     async def close(self) -> None:
         self.post_guild_count.cancel()
