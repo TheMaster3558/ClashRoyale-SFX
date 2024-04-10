@@ -72,7 +72,6 @@ class TopGG(commands.Cog):
 
         self.webhook_auth = os.environ['WEBHOOK_AUTH']
         self.port = int(os.environ['PORT'])
-        self.domain = os.environ['DOMAIN']
 
         self.topgg_webhook = topgg.WebhookManager(bot).dbl_webhook('/topgg', self.webhook_auth)
         cors = aiohttp_cors.setup(self.topgg_webhook.webserver, defaults={
