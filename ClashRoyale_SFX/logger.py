@@ -31,7 +31,14 @@ class DiscordWebhookLogger(logging.Handler):
             # no event loop is present as this is being called from another thread for some reason
             while self.loop is None:
                 time.sleep(1)
-            asyncio.run_coroutine_threadsafe(self.send(text), self.loop)
+
+            future = asyncio.run_coroutine_threadsafe(self.send(text), self.loop)
+            try:
+                future.result(10000)
+            except asyncio.TimeoutError:
+                print('send() timeouted')
+            except Exception as exc:
+                print(f'send() raised an exception: {exc!r}')
 
     async def send(self, text: str, code: str = 'py') -> None:
         while not hasattr(self.bot, 'session'):
