@@ -71,7 +71,7 @@ class TopGG(commands.Cog):
         self.bot = bot
 
         self.webhook_auth = os.environ['WEBHOOK_AUTH']
-        self.webhook_port = int(os.environ['WEBHOOK_PORT'])
+        self.port = int(os.environ['PORT'])
         self.domain = os.environ['DOMAIN']
 
         self.topgg_webhook = topgg.WebhookManager(bot).dbl_webhook('/topgg', self.webhook_auth)
@@ -85,11 +85,7 @@ class TopGG(commands.Cog):
         cors.add(self.topgg_webhook.webserver.router.add_post('/discordbotlist', self.discordbotlist_webhook))
 
     async def cog_load(self) -> None:
-        await asyncio.create_subprocess_shell(
-            f'ngrok http --domain={self.domain} {self.webhook_port}', stdout=asyncio.subprocess.PIPE,
-                                                    stderr=asyncio.subprocess.PIPE
-        )
-        self.topgg_webhook.run(self.webhook_port)
+        self.topgg_webhook.run(self.port)
 
     async def cog_unload(self) -> None:
         await self.topgg_webhook.close()
