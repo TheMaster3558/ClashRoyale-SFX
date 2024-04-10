@@ -47,8 +47,7 @@ class DiscordWebhookLogger(logging.Handler):
 
     async def asend(self, text: str, code: str = 'py') -> None:
         if self.async_webhook is MISSING:
-            self.async_webhook = discord.Webhook.from_url(os.environ['LOG_WEBHOOK_URL'],
-                                                    client=self.bot)
+            self.async_webhook = discord.Webhook.from_url(os.environ['LOG_WEBHOOK_URL'], client=self.bot)
 
         embed = discord.Embed(description=f'```{code}\n{text}\n```', color=discord.Color.dark_embed())
 

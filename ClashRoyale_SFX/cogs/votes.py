@@ -1,18 +1,17 @@
 from __future__ import annotations
 
-import random
+import asyncio
 import math
 import os
+import random
 from typing import TYPE_CHECKING
 
-import topgg
-import asyncio
+import aiohttp_cors
 import discord
+import topgg
+from aiohttp import web
 from discord import app_commands
 from discord.ext import commands
-from aiohttp import web
-import aiohttp_cors
-
 
 if TYPE_CHECKING:
     from ..bot import Bot

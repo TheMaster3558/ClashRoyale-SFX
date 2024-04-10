@@ -77,7 +77,14 @@ class Bot(commands.AutoShardedBot):
         root_logger: bool = False,
     ) -> None:
         self.logger = log_handler  # type: ignore
-        super().run(token, reconnect=reconnect, log_handler=log_handler, log_formatter=log_formatter, log_level=log_level, root_logger=root_logger)
+        super().run(
+            token,
+            reconnect=reconnect,
+            log_handler=log_handler,
+            log_formatter=log_formatter,
+            log_level=log_level,
+            root_logger=root_logger,
+        )
 
     async def close(self) -> None:
         self.post_guild_count.cancel()

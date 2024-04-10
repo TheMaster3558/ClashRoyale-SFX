@@ -7,8 +7,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from .votes import AllView, NoMoreCommands
 from ..player import play
+from .votes import AllView, NoMoreCommands
 
 if TYPE_CHECKING:
     from ..bot import Bot
