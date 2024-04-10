@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import math
 import os
+import ssl
 import random
 from typing import TYPE_CHECKING
 
@@ -83,8 +84,23 @@ class TopGG(commands.Cog):
         })
         cors.add(self.topgg_webhook.webserver.router.add_post('/discordbotlist', self.discordbotlist_webhook))
 
+    async def run(self) -> None:
+        for webhook in self.topgg_webhook._webhooks.values():
+            self.topgg_webhook.webserver.router.add_post(webhook['route'], webhook['func'])
+        runner = web.AppRunner(self.topgg_webhook.webserver)
+        await runner.setup()
+
+        ssl_context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
+        self.topgg_webhook._webserver = web.TCPSite(
+            runner,
+            host='0.0.0.0',
+            port=self.port,
+            ssl_context=ssl_context
+        )
+        await self.topgg_webhook._webserver.start()
+
     async def cog_load(self) -> None:
-        self.topgg_webhook.run(self.port)
+        asyncio.create_task(self.run())
 
     async def cog_unload(self) -> None:
         await self.topgg_webhook.close()
