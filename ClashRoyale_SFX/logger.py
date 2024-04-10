@@ -21,10 +21,10 @@ class DiscordWebhookLogger(logging.Handler):
         super().__init__()
         self.bot = bot
         self.webhook: discord.Webhook = MISSING
-        import threading
-        print(threading.get_ident(), threading.main_thread().ident)
 
     def emit(self, record: logging.LogRecord) -> None:
+        import threading
+        print(threading.get_ident(), threading.main_thread().ident)
         text = self.format(record)
         asyncio.create_task(self.send(text))
 
