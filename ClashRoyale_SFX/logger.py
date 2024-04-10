@@ -26,9 +26,11 @@ class DiscordWebhookLogger(logging.Handler):
         text = self.format(record)
 
         try:
-            asyncio.create_task(self.asend(text))
+            loop = asyncio.get_running_loop()
         except RuntimeError:
             self.send(text)
+        else:
+            loop.create_task(self.asend(text))
 
     def send(self, text: str, code: str = 'py') -> None:
         if self.sync_webhook is MISSING:
