@@ -95,12 +95,12 @@ class TopGG(commands.Cog):
 
         data = await request.json()
 
-        self.bot.dispatch('vote', data['id'])
+        self.bot.dispatch('vote', int(data['id']))
         return web.Response(status=200, text='Ok')
 
     @commands.Cog.listener()
     async def on_dbl_vote(self, data: topgg.types.BotVoteData) -> None:
-        self.bot.dispatch('vote', data.user)
+        self.bot.dispatch('vote', int(data.user))
 
     @commands.Cog.listener('on_vote')
     async def on_vote(self, user_id: int) -> None:
