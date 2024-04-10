@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-import time
 from typing import TYPE_CHECKING
 
 import discord
@@ -19,28 +18,40 @@ class DiscordWebhookLogger(logging.Handler):
     def __init__(self, bot: Bot) -> None:
         super().__init__()
         self.bot = bot
-        self.webhook: discord.Webhook = MISSING
+        self.sync_webhook: discord.SyncWebhook = MISSING
+        self.async_webhook: discord.Webhook = MISSING
         self.loop: asyncio.AbstractEventLoop | None = None
 
     def emit(self, record: logging.LogRecord) -> None:
         text = self.format(record)
 
         try:
-            asyncio.create_task(self.send(text))
+            asyncio.create_task(self.asend(text))
         except RuntimeError:
-            raise ValueError(text)
+            self.send(text)
 
-    async def send(self, text: str, code: str = 'py') -> None:
-        while not hasattr(self.bot, 'session'):
-            await asyncio.sleep(0)
-
-        if not self.webhook:
-            self.webhook = discord.Webhook.from_url(os.environ['LOG_WEBHOOK_URL'], session=self.bot.session, client=self.bot)
+    def send(self, text: str, code: str = 'py') -> None:
+        if self.sync_webhook is MISSING:
+            self.sync_webhook = discord.SyncWebhook.from_url(os.environ['LOG_WEBHOOK_URL'])
 
         embed = discord.Embed(description=f'```{code}\n{text}\n```', color=discord.Color.dark_embed())
 
         try:
-            await self.webhook.send(embed=embed)
+            self.sync_webhook.send(embed=embed)
+        except discord.HTTPException:
+            # without this catch, a ratelimit could send the bot into an infinite loop
+            # error -> log the error -> rate limit -> error -> ...
+            pass
+
+    async def asend(self, text: str, code: str = 'py') -> None:
+        if self.async_webhook is MISSING:
+            self.async_webhook = discord.Webhook.from_url(os.environ['LOG_WEBHOOK_URL'],
+                                                    client=self.bot)
+
+        embed = discord.Embed(description=f'```{code}\n{text}\n```', color=discord.Color.dark_embed())
+
+        try:
+            await self.async_webhook.send(embed=embed)
         except discord.HTTPException:
             # without this catch, a ratelimit could send the bot into an infinite loop
             # error -> log the error -> rate limit -> error -> ...
