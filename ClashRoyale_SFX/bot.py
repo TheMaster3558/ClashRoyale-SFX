@@ -7,7 +7,6 @@ import logging
 import os
 from typing import TYPE_CHECKING, Optional
 
-import aiofiles
 import aiohttp
 import discord
 import topgg
@@ -63,8 +62,7 @@ class Bot(commands.AutoShardedBot):
 
         await self.load_extension(f'jishaku')
 
-        async with aiofiles.open('exempt_guilds.json', 'r') as f:
-            self.exempt_guilds = set(json.loads(await f.read()))
+        self.exempt_guilds = set(json.loads(os.environ.get('EXEMPT_GUILDS', '[]')))
 
         self.top_gg = topgg.DBLClient(self, os.environ['TOPGG_TOKEN'], autopost=True)
 
