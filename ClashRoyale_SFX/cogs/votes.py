@@ -78,11 +78,9 @@ class TopGG(commands.Cog):
         self.bot.commands_remaining[user_id] = math.inf
 
     @commands.Cog.listener()
-    async def on_app_command_completion(self, interaction: discord.Interaction[Bot],
-                                        command: app_commands.Command) -> None:
+    async def on_app_command_completion(self, interaction: discord.Interaction[Bot], command: app_commands.Command) -> None:
         if random.randint(0, 10) == 0:
-            await interaction.followup.send(f'{interaction.user.mention} support me!!🥺🥺',
-                                            view=AllView(interaction.client))
+            await interaction.followup.send(f'{interaction.user.mention} support me!!🥺🥺', view=AllView(interaction.client))
 
     @app_commands.command(description='Vote for me!')
     async def vote(self, interaction: discord.Interaction[Bot]) -> None:
