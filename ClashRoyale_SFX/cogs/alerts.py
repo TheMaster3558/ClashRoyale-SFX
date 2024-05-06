@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+import datetime
 from typing import TYPE_CHECKING, Self
 
 import discord
@@ -71,6 +71,7 @@ class AlertEmbedBuilder(discord.ui.Modal, title='Make your embed'):
         required=False,
     )
     image_url = discord.ui.TextInput(label='Image URL', required=False)
+    expires_in = discord.ui.TextInput(label='Expires in (hours)')
 
     def __init__(self):
         super().__init__()
@@ -87,10 +88,11 @@ class AlertEmbedBuilder(discord.ui.Modal, title='Make your embed'):
         if self.image_url:
             embed.set_image(url=self.image_url.value)
 
-        iterator = iter(self.fields.value.split('\n'))
-        for name in iterator:
-            value = next(iterator)
-            embed.add_field(name=name, value=value)
+        if self.fields.value:
+            iterator = iter(self.fields.value.split('\n'))
+            for name in iterator:
+                value = next(iterator)
+                embed.add_field(name=name, value=value)
 
         return embed
 
@@ -106,10 +108,16 @@ class Alerts(commands.Cog):
         self.bot = bot
         self.alerted_users: set[int] = set()
         self.current_alert: discord.Embed | None = None
+        self.expires_in: datetime.datetime | None = None
 
     @commands.Cog.listener()
     async def on_app_command_completion(self, interaction: discord.Interaction[Bot], command: app_commands.Command) -> None:
         if self.current_alert is not None and interaction.user.id not in self.alerted_users:
+            if discord.utils.utcnow() > self.expires_in:
+                self.current_alert = None
+                self.expires_in = None
+                return
+
             embed = discord.Embed(
                 title='You have been a new alert! Click below to read it!', color=discord.Color.dark_embed()
             )
@@ -131,6 +139,7 @@ class Alerts(commands.Cog):
         if modal.view.status:
             self.current_alert = modal.build_embed()
             await ctx.send('Alert added!')
+            self.expires_in = discord.utils.utcnow() + datetime.timedelta(hours=int(modal.expires_in.value))
         else:
             await ctx.send('Alert cancelled :(')
 
