@@ -15,7 +15,10 @@ if TYPE_CHECKING:
 
 
 @app_commands.check
-async def check_commands_remaining(interaction: discord.Interaction) -> bool:
+async def check_commands_remaining(interaction: discord.Interaction[Bot]) -> bool:
+    if interaction.guild and interaction.guild.id in interaction.client.exempt_guilds:
+        return True
+
     bot: Bot = interaction.client
 
     bot.commands_remaining.setdefault(interaction.user.id, 10)

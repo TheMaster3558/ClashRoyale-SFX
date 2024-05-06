@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import asyncio
 import datetime
+import json
 import logging
 import os
 from typing import TYPE_CHECKING, Optional
 
+import aiofiles
 import aiohttp
 import discord
 import topgg
@@ -29,6 +31,7 @@ class Bot(commands.AutoShardedBot):
     session: aiohttp.ClientSession
     top_gg: topgg.DBLClient
     logger: DiscordWebhookLogger
+    exempt_guilds: set[int]
 
     def __init__(self, test_guild: discord.abc.Snowflake) -> None:
         intents = discord.Intents.default()
@@ -59,6 +62,9 @@ class Bot(commands.AutoShardedBot):
                     logger.error(f'Error loading cog: {file}', exc_info=e)
 
         await self.load_extension(f'jishaku')
+
+        async with aiofiles.open('exempt_guilds.json', 'r') as f:
+            self.exempt_guilds = set(json.loads(await f.read()))
 
         self.top_gg = topgg.DBLClient(self, os.environ['TOPGG_TOKEN'], autopost=True)
 
