@@ -1,4 +1,4 @@
-discord.py[voice]>=2.3
+discord.py[voice] @ git+https://github.com/rapptz/discord.py
 topggpy>=1.4
 python-dotenv>=1.0
 jishaku>=2.5
