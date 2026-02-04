@@ -45,9 +45,9 @@ class Bot(commands.AutoShardedBot):
 
         try:
             await self.top_gg.post_guild_count()
-            logger.info(f'Posted server count ({self.top_gg.guild_count})')
+            self.logger.info(f'Posted server count ({self.top_gg.guild_count})')
         except Exception as e:
-            logger.error('Failed to post server count\n{}: {}'.format(type(e).__name__, e))
+            self.logger.error('Failed to post server count\n{}: {}'.format(type(e).__name__, e))
 
 
     @tasks.loop(time=datetime.time(hour=0, minute=0))
