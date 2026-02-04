@@ -43,6 +43,13 @@ class Bot(commands.AutoShardedBot):
         await self.wait_until_ready()
         await self.get_channel(int(os.environ['GUILD_COUNT_CHANNEL_ID'])).send(str(len(self.guilds)))
 
+        try:
+            await self.top_gg.post_guild_count()
+            logger.info(f'Posted server count ({self.top_gg.guild_count})')
+        except Exception as e:
+            logger.error('Failed to post server count\n{}: {}'.format(type(e).__name__, e))
+
+
     @tasks.loop(time=datetime.time(hour=0, minute=0))
     async def reset_commands_remaining(self) -> None:
         self.commands_remaining.clear()
@@ -64,7 +71,7 @@ class Bot(commands.AutoShardedBot):
 
         self.exempt_guilds = set(json.loads(os.environ.get('EXEMPT_GUILDS', '[]')))
 
-        self.top_gg = topgg.DBLClient(self, os.environ['TOPGG_TOKEN'], autopost=True)
+        self.top_gg = topgg.DBLClient(self, os.environ['TOPGG_TOKEN'], autopost=False)
 
         if 'GUILD_COUNT_CHANNEL_ID' in os.environ:
             self.post_guild_count.start()
